@@ -41,16 +41,16 @@ use std::borrow::Cow;
 ///
 /// [`iced`]: https://github.com/iced-rs/iced
 pub enum Renderer<Theme> {
+    #[cfg(feature = "tiny_skia")]
     TinySkia(iced_tiny_skia::Renderer<Theme>),
-    #[cfg(feature = "wgpu")]
     Wgpu(iced_wgpu::Renderer<Theme>),
 }
 
 macro_rules! delegate {
     ($renderer:expr, $name:ident, $body:expr) => {
         match $renderer {
+            #[cfg(feature = "tiny_skia")]
             Self::TinySkia($name) => $body,
-            #[cfg(feature = "wgpu")]
             Self::Wgpu($name) => $body,
         }
     };
@@ -59,10 +59,10 @@ macro_rules! delegate {
 impl<T> Renderer<T> {
     pub fn draw_mesh(&mut self, mesh: Mesh) {
         match self {
+            #[cfg(feature = "tiny_skia")]
             Self::TinySkia(_) => {
                 log::warn!("Unsupported mesh primitive: {:?}", mesh)
             }
-            #[cfg(feature = "wgpu")]
             Self::Wgpu(renderer) => {
                 renderer.draw_primitive(iced_wgpu::Primitive::Custom(
                     iced_wgpu::primitive::Custom::Mesh(mesh),
@@ -77,6 +77,7 @@ impl<T> core::Renderer for Renderer<T> {
 
     fn with_layer(&mut self, bounds: Rectangle, f: impl FnOnce(&mut Self)) {
         match self {
+            #[cfg(feature = "tiny_skia")]
             Self::TinySkia(renderer) => {
                 let primitives = renderer.start_layer();
 
@@ -86,21 +87,19 @@ impl<T> core::Renderer for Renderer<T> {
                     Self::TinySkia(renderer) => {
                         renderer.end_layer(primitives, bounds);
                     }
-                    #[cfg(feature = "wgpu")]
                     _ => unreachable!(),
                 }
             }
-            #[cfg(feature = "wgpu")]
             Self::Wgpu(renderer) => {
                 let primitives = renderer.start_layer();
 
                 f(self);
 
                 match self {
-                    #[cfg(feature = "wgpu")]
                     Self::Wgpu(renderer) => {
                         renderer.end_layer(primitives, bounds);
                     }
+                    #[cfg(feature = "tiny_skia")]
                     _ => unreachable!(),
                 }
             }
@@ -113,6 +112,7 @@ impl<T> core::Renderer for Renderer<T> {
         f: impl FnOnce(&mut Self),
     ) {
         match self {
+            #[cfg(feature = "tiny_skia")]
             Self::TinySkia(renderer) => {
                 let primitives = renderer.start_translation();
 
@@ -122,21 +122,19 @@ impl<T> core::Renderer for Renderer<T> {
                     Self::TinySkia(renderer) => {
                         renderer.end_translation(primitives, translation);
                     }
-                    #[cfg(feature = "wgpu")]
                     _ => unreachable!(),
                 }
             }
-            #[cfg(feature = "wgpu")]
             Self::Wgpu(renderer) => {
                 let primitives = renderer.start_translation();
 
                 f(self);
 
                 match self {
-                    #[cfg(feature = "wgpu")]
                     Self::Wgpu(renderer) => {
                         renderer.end_translation(primitives, translation);
                     }
+                    #[cfg(feature = "tiny_skia")]
                     _ => unreachable!(),
                 }
             }
@@ -160,10 +158,9 @@ impl<T> text::Renderer for Renderer<T> {
     type Font = Font;
     type Paragraph = Paragraph;
 
-    const ICON_FONT: Font = iced_tiny_skia::Renderer::<T>::ICON_FONT;
-    const CHECKMARK_ICON: char = iced_tiny_skia::Renderer::<T>::CHECKMARK_ICON;
-    const ARROW_DOWN_ICON: char =
-        iced_tiny_skia::Renderer::<T>::ARROW_DOWN_ICON;
+    const ICON_FONT: Font = iced_wgpu::Renderer::<T>::ICON_FONT;
+    const CHECKMARK_ICON: char = iced_wgpu::Renderer::<T>::CHECKMARK_ICON;
+    const ARROW_DOWN_ICON: char = iced_wgpu::Renderer::<T>::ARROW_DOWN_ICON;
 
     fn default_font(&self) -> Self::Font {
         delegate!(self, renderer, renderer.default_font())
@@ -251,6 +248,7 @@ impl<T> crate::graphics::geometry::Renderer for Renderer<T> {
 
     fn draw(&mut self, layers: Vec<Self::Geometry>) {
         match self {
+            #[cfg(feature = "tiny_skia")]
             Self::TinySkia(renderer) => {
                 for layer in layers {
                     match layer {
@@ -261,7 +259,6 @@ impl<T> crate::graphics::geometry::Renderer for Renderer<T> {
                     }
                 }
             }
-            #[cfg(feature = "wgpu")]
             Self::Wgpu(renderer) => {
                 for layer in layers {
                     match layer {

@@ -7,22 +7,22 @@ use crate::graphics::geometry::{Fill, Path, Stroke, Text};
 use crate::Renderer;
 
 pub enum Frame {
+    #[cfg(feature = "tiny_skia")]
     TinySkia(iced_tiny_skia::geometry::Frame),
-    #[cfg(feature = "wgpu")]
     Wgpu(iced_wgpu::geometry::Frame),
 }
 
 pub enum Geometry {
+    #[cfg(feature = "tiny_skia")]
     TinySkia(iced_tiny_skia::Primitive),
-    #[cfg(feature = "wgpu")]
     Wgpu(iced_wgpu::Primitive),
 }
 
 macro_rules! delegate {
     ($frame:expr, $name:ident, $body:expr) => {
         match $frame {
+            #[cfg(feature = "tiny_skia")]
             Self::TinySkia($name) => $body,
-            #[cfg(feature = "wgpu")]
             Self::Wgpu($name) => $body,
         }
     };
@@ -31,10 +31,10 @@ macro_rules! delegate {
 impl Frame {
     pub fn new<Theme>(renderer: &Renderer<Theme>, size: Size) -> Self {
         match renderer {
+            #[cfg(feature = "tiny_skia")]
             Renderer::TinySkia(_) => {
                 Frame::TinySkia(iced_tiny_skia::geometry::Frame::new(size))
             }
-            #[cfg(feature = "wgpu")]
             Renderer::Wgpu(_) => {
                 Frame::Wgpu(iced_wgpu::geometry::Frame::new(size))
             }
@@ -128,10 +128,10 @@ impl Frame {
     #[inline]
     pub fn with_clip(&mut self, region: Rectangle, f: impl FnOnce(&mut Frame)) {
         let mut frame = match self {
+            #[cfg(feature = "tiny_skia")]
             Self::TinySkia(_) => Self::TinySkia(
                 iced_tiny_skia::geometry::Frame::new(region.size()),
             ),
-            #[cfg(feature = "wgpu")]
             Self::Wgpu(_) => {
                 Self::Wgpu(iced_wgpu::geometry::Frame::new(region.size()))
             }
@@ -142,10 +142,10 @@ impl Frame {
         let origin = Point::new(region.x, region.y);
 
         match (self, frame) {
+            #[cfg(feature = "tiny_skia")]
             (Self::TinySkia(target), Self::TinySkia(frame)) => {
                 target.clip(frame, origin);
             }
-            #[cfg(feature = "wgpu")]
             (Self::Wgpu(target), Self::Wgpu(frame)) => {
                 target.clip(frame, origin);
             }
@@ -180,8 +180,8 @@ impl Frame {
 
     pub fn into_geometry(self) -> Geometry {
         match self {
+            #[cfg(feature = "tiny_skia")]
             Self::TinySkia(frame) => Geometry::TinySkia(frame.into_primitive()),
-            #[cfg(feature = "wgpu")]
             Self::Wgpu(frame) => Geometry::Wgpu(frame.into_primitive()),
         }
     }

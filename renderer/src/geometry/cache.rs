@@ -26,8 +26,8 @@ enum State {
 
 #[derive(Debug, Clone)]
 enum Internal {
+    #[cfg(feature = "tiny_skia")]
     TinySkia(Arc<iced_tiny_skia::Primitive>),
-    #[cfg(feature = "wgpu")]
     Wgpu(Arc<iced_wgpu::Primitive>),
 }
 
@@ -69,6 +69,7 @@ impl Cache {
         {
             if *cached_bounds == bounds {
                 match primitive {
+                    #[cfg(feature = "tiny_skia")]
                     Internal::TinySkia(primitive) => {
                         return Geometry::TinySkia(
                             iced_tiny_skia::Primitive::Cache {
@@ -76,7 +77,6 @@ impl Cache {
                             },
                         );
                     }
-                    #[cfg(feature = "wgpu")]
                     Internal::Wgpu(primitive) => {
                         return Geometry::Wgpu(iced_wgpu::Primitive::Cache {
                             content: primitive.clone(),
@@ -93,10 +93,10 @@ impl Cache {
             let geometry = frame.into_geometry();
 
             match geometry {
+                #[cfg(feature = "tiny_skia")]
                 Geometry::TinySkia(primitive) => {
                     Internal::TinySkia(Arc::new(primitive))
                 }
-                #[cfg(feature = "wgpu")]
                 Geometry::Wgpu(primitive) => {
                     Internal::Wgpu(Arc::new(primitive))
                 }
@@ -109,12 +109,12 @@ impl Cache {
         };
 
         match primitive {
+            #[cfg(feature = "tiny_skia")]
             Internal::TinySkia(primitive) => {
                 Geometry::TinySkia(iced_tiny_skia::Primitive::Cache {
                     content: primitive,
                 })
             }
-            #[cfg(feature = "wgpu")]
             Internal::Wgpu(primitive) => {
                 Geometry::Wgpu(iced_wgpu::Primitive::Cache {
                     content: primitive,

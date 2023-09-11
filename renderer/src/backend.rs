@@ -6,16 +6,16 @@ use std::borrow::Cow;
 
 #[allow(clippy::large_enum_variant)]
 pub enum Backend {
+    #[cfg(feature = "tiny_skia")]
     TinySkia(iced_tiny_skia::Backend),
-    #[cfg(feature = "wgpu")]
     Wgpu(iced_wgpu::Backend),
 }
 
 macro_rules! delegate {
     ($backend:expr, $name:ident, $body:expr) => {
         match $backend {
+            #[cfg(feature = "tiny_skia")]
             Self::TinySkia($name) => $body,
-            #[cfg(feature = "wgpu")]
             Self::Wgpu($name) => $body,
         }
     };
