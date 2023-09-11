@@ -466,17 +466,17 @@ async fn run_instance<A, E, C>(
 
                 redraw_pending = false;
             }
-            event::Event::PlatformSpecific(event::PlatformSpecific::MacOS(
-                event::MacOS::ReceivedUrl(url),
-            )) => {
-                use crate::core::event;
+            // event::Event::PlatformSpecific(event::PlatformSpecific::MacOS(
+            //     event::MacOS::ReceivedUrl(url),
+            // )) => {
+            //     use crate::core::event;
 
-                events.push(Event::PlatformSpecific(
-                    event::PlatformSpecific::MacOS(event::MacOS::ReceivedUrl(
-                        url,
-                    )),
-                ));
-            }
+            //     events.push(Event::PlatformSpecific(
+            //         event::PlatformSpecific::MacOS(event::MacOS::ReceivedUrl(
+            //             url,
+            //         )),
+            //     ));
+            // }
             event::Event::UserEvent(message) => {
                 messages.push(message);
             }

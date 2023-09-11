@@ -150,4 +150,4 @@ web-sys = "0.3"
 wgpu = "0.17"
 winapi = "0.3"
 window_clipboard = "0.3"
-winit = { git = "https://github.com/iced-rs/winit.git", rev = "c52db2045d0a2f1b8d9923870de1d4ab1994146e", default-features = false }
+winit = "0.28.6"
