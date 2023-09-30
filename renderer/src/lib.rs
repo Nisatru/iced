@@ -255,6 +255,7 @@ impl<T> crate::graphics::geometry::Renderer for Renderer<T> {
                         crate::Geometry::Wgpu(primitive) => {
                             renderer.draw_primitive(primitive);
                         }
+                        #[cfg(feature = "tiny_skia")]
                         crate::Geometry::TinySkia(_) => unreachable!(),
                     }
                 }
