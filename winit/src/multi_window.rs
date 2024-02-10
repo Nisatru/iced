@@ -430,22 +430,22 @@ async fn run_instance<A, E, C>(
                             window.raw.request_redraw();
                         }
                     }
-                    event::Event::PlatformSpecific(
-                        event::PlatformSpecific::MacOS(
-                            event::MacOS::ReceivedUrl(url),
-                        ),
-                    ) => {
-                        use crate::core::event;
+                    // event::Event::PlatformSpecific(
+                    //     event::PlatformSpecific::MacOS(
+                    //         event::MacOS::ReceivedUrl(url),
+                    //     ),
+                    // ) => {
+                    //     use crate::core::event;
 
-                        events.push((
-                            None,
-                            event::Event::PlatformSpecific(
-                                event::PlatformSpecific::MacOS(
-                                    event::MacOS::ReceivedUrl(url),
-                                ),
-                            ),
-                        ));
-                    }
+                    //     events.push((
+                    //         None,
+                    //         event::Event::PlatformSpecific(
+                    //             event::PlatformSpecific::MacOS(
+                    //                 event::MacOS::ReceivedUrl(url),
+                    //             ),
+                    //         ),
+                    //     ));
+                    // }
                     event::Event::UserEvent(message) => {
                         messages.push(message);
                     }
